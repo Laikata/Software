@@ -1,0 +1,14 @@
+name = "gps"
+header = 0x01
+
+[[field]]
+type = "double"
+name = "latitude"
+
+[[field]]
+type = "double"
+name = "longitude"
+
+[[field]]
+type = "double"
+name = "altitude"
