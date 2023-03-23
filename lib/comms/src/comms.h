@@ -1,6 +1,7 @@
 #pragma once
 #include <inttypes.h>
 #include <Arduino.h>
+#include <vector.h>
 
 
 static const uint32_t crc_table[256] = {
@@ -70,9 +71,16 @@ static const uint32_t crc_table[256] = {
   0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
+typedef enum {none = 0, gps = 1, imu = 2} PacketType;
+PacketType comms_recv();
 static double gps_latitude;
 static double gps_longitude;
 static double gps_altitude;
+static vec3_t imu_mag;
+static vec3_t imu_accel;
+static vec3_t imu_gyro;
+static float imu_hoz;
 
 void comms_send(uint8_t data[], uint8_t data_size);
-bool comms_recv();
+void comms_gps(double latitude, double longitude, double altitude);
+void comms_imu(vec3_t mag, vec3_t accel, vec3_t gyro, float hoz);

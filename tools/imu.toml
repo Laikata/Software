@@ -1,0 +1,18 @@
+name = "imu"
+header = 0x02
+
+[[field]]
+name = "mag"
+type = "vec3_t"
+
+[[field]]
+name = "accel"
+type = "vec3_t"
+
+[[field]]
+name = "gyro"
+type = "vec3_t"
+
+[[field]]
+name = "hoz"
+type = "float"
