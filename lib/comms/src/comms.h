@@ -81,6 +81,6 @@ static vec3_t imu_accel;
 static vec3_t imu_gyro;
 static float imu_hoz;
 
-void comms_send(uint8_t data[], uint8_t data_size);
+void comms_send(uint8_t data[], uint8_t data_length, uint8_t header);
 void comms_gps(double latitude, double longitude, double altitude);
 void comms_imu(vec3_t mag, vec3_t accel, vec3_t gyro, float hoz);

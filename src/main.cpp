@@ -11,4 +11,12 @@ void loop() {
     Serial.println(gps_latitude);
     Serial.println(gps_altitude);
   }
+
+  
+
+  if (millis() % 10 == 0) {
+    Serial.println("Sending");
+    comms_gps(0.1, 0.2, 0.3);
+  }
+
 }

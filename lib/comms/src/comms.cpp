@@ -13,6 +13,40 @@ static uint32_t crc32(const uint8_t data[], size_t data_length) {
     return crc32;
 }
 
+void comms_send(uint8_t data[], uint8_t data_length, uint8_t header){
+    
+	// SYN char + header + counter + data + crc32 checksum
+	uint16_t packet_size = 1 + 1 + 1 + data_length + 4;
+	static uint8_t counter = 0;
+	uint8_t packet[packet_size];
+
+	packet[0] = 0x16;
+	packet[1] = header;
+	packet[2] = counter;
+
+	for (uint32_t i = 0; i < data_length; i++) {
+		packet[i + 3] = data[i];
+	}
+
+	uint32_t checksum = crc32(data, data_length);
+
+	//TODO: Test whether this is sent in big endian or not
+	packet[2 + data_length + 1] = (checksum >> 24) & 0xff;
+	packet[2 + data_length + 2] = (checksum >> 16) & 0xff;
+	packet[2 + data_length + 3] = (checksum >> 8) & 0xff;
+	packet[2 + data_length + 4] = checksum & 0xff;
+
+	static int lost_packets = 0;
+	// Discard package if there isn't space for writing
+	if(Serial.availableForWrite() >= packet_size) {
+		Serial.write(packet, packet_size);
+                counter++; // This will overflow and that is okay
+	} else {
+		lost_packets++;
+		//Serial.printf("LOST PACKETS %i\n", lost_packets);
+	}
+}
+
 inline void read(uint8_t *buffer, int length) {
     Serial.readBytes(buffer, length);
 }
@@ -66,7 +100,7 @@ void comms_gps(double latitude, double longitude, double altitude) {
         memcpy(&data[0], &latitude, sizeof(double));
         memcpy(&data[8], &longitude, sizeof(double));
         memcpy(&data[16], &altitude, sizeof(double));
-        comms_send(data, data_size);
+        comms_send(data, data_size, 0x01);
 }
 
 
@@ -77,5 +111,5 @@ void comms_imu(vec3_t mag, vec3_t accel, vec3_t gyro, float hoz) {
         memcpy(&data[12], &accel, sizeof(vec3_t));
         memcpy(&data[24], &gyro, sizeof(vec3_t));
         memcpy(&data[36], &hoz, sizeof(float));
-        comms_send(data, data_size);
+        comms_send(data, data_size, 0x02);
 }
