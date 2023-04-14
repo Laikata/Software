@@ -71,8 +71,12 @@ static const uint32_t crc_table[256] = {
   0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
-typedef enum {none = 0, gps = 1, imu = 2} PacketType;
-PacketType comms_recv();
+void comms_send(uint8_t *data, size_t data_size, uint8_t header);
+
+// Start auto-generated code
+
+typedef enum {packet_error_crc = -1, packet_none = 0, packet_gps = 1, packet_imu = 2} packet_t;
+packet_t comms_recv();
 static double gps_latitude;
 static double gps_longitude;
 static double gps_altitude;
@@ -80,7 +84,5 @@ static vec3_t imu_mag;
 static vec3_t imu_accel;
 static vec3_t imu_gyro;
 static float imu_hoz;
-
-void comms_send(uint8_t data[], uint8_t data_length, uint8_t header);
 void comms_gps(double latitude, double longitude, double altitude);
 void comms_imu(vec3_t mag, vec3_t accel, vec3_t gyro, float hoz);
