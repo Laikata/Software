@@ -7,7 +7,7 @@ void test_gps(void) {
     double altitude = 1;
 
     comms_gps(latitude, longitude, altitude);
-    //Serial.println(comms_recv());
+    Serial.println(comms_recv());
     //assert(comms_recv() == packet_gps);
     //assert(latitude == gps_latitude);
     //assert(longitude == gps_longitude);
@@ -19,12 +19,12 @@ void setup() {
     #if defined (TARGET_NANO_RP2040_CONNECT) || defined (TARGET_RASPBERRY_PI_PICO)
     Serial1.begin(9600);
     #endif
+    //gps_latitude = 0;
+    //gps_longitude = 0;
+    //gps_altitude = 0;
 }
 
 void loop() {
-    //test_gps();
-    comms_recv();
+    test_gps();
     delay(500);
-    Serial.println(gps_latitude);
-    Serial.println("Hello!");
 }

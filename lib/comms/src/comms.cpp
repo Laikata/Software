@@ -28,7 +28,7 @@ inline void read(uint8_t *buffer, int length)
 bool check_crc(uint8_t data[], size_t length, uint8_t expected[])
 {
     uint32_t expected_crc = 0;
-    memcpy(expected, &expected_crc, 4);
+    memcpy(&expected_crc, expected, 4);
 
     return (crc32(data, length) == expected_crc);
 }
@@ -42,10 +42,10 @@ void comms_send(uint8_t *data, size_t data_size, uint8_t header)
     packet[1] = counter;
     packet[2] = header;
 
-    memcpy(data, packet + 3, data_size);
+    memcpy(packet + 3, data, data_size);
 
     uint32_t hash = crc32(data, data_size);
-    memcpy(&hash, packet + 3 + data_size, 4);
+    memcpy(packet + 3 + data_size, &hash, 4);
 
     #if defined (TARGET_NANO_RP2040_CONNECT) || defined (TARGET_RASPBERRY_PI_PICO)
     Serial1.write(packet, packet_size);
@@ -109,6 +109,8 @@ packet_t comms_recv()
             if (!check_crc(data, 24, data + 24))
                 return packet_error_crc;
             comms_unpack_gps(data, &gps_latitude, &gps_longitude, &gps_altitude);
+            // gps_latitude can only be read from here for no reason. rest of program has it zero???!
+            Serial.println(gps_latitude);
             return packet_gps;
         }
         else if (header == 2)
