@@ -1,5 +1,14 @@
 #include "comms.h"
 
+double gps_latitude = 0;
+double gps_longitude = 0;
+double gps_altitude = 0;
+
+vec3_t imu_mag = {.x = 0, .y = 0, .z = 0};
+vec3_t imu_accel = {.x = 0, .y = 0, .z = 0};
+vec3_t imu_gyro = {.x = 0, .y = 0, .z = 0};
+float imu_hoz = 0;
+
 static uint32_t crc32(const uint8_t data[], size_t data_length)
 {
     uint32_t crc32 = 0xFFFFFFFFu;
@@ -91,17 +100,14 @@ void comms_unpack_imu(uint8_t data[], vec3_t *mag, vec3_t *accel, vec3_t *gyro, 
 }
 packet_t comms_recv()
 {
+    // Note: Current implementation only handles one packet per call
     uint8_t start = 0;
     read(&start, 1);
-    Serial.print("Start ");
-    Serial.println(start);
     if (start == 0x16)
     {
         uint8_t buffer[2];
         read(buffer, 2);
         uint8_t header = buffer[1];
-        Serial.print("header ");
-        Serial.println(header);
         if (header == 1)
         {
             uint8_t data[24 + 4];
@@ -109,8 +115,6 @@ packet_t comms_recv()
             if (!check_crc(data, 24, data + 24))
                 return packet_error_crc;
             comms_unpack_gps(data, &gps_latitude, &gps_longitude, &gps_altitude);
-            // gps_latitude can only be read from here for no reason. rest of program has it zero???!
-            Serial.println(gps_latitude);
             return packet_gps;
         }
         else if (header == 2)

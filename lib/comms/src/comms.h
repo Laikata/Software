@@ -75,14 +75,14 @@ void comms_send(uint8_t *data, size_t data_size, uint8_t header);
 
 // Start auto-generated code
 
-typedef enum {packet_error_crc = -1, packet_none = 0, packet_gps = 1, packet_imu = 2} packet_t;
+typedef enum PACKET_ENUM {packet_error_crc = -1, packet_none = 0, packet_gps = 1, packet_imu = 2} packet_t;
 packet_t comms_recv();
-static double gps_latitude;
-static double gps_longitude;
-static double gps_altitude;
-static vec3_t imu_mag;
-static vec3_t imu_accel;
-static vec3_t imu_gyro;
-static float imu_hoz;
+extern double gps_latitude;
+extern double gps_longitude;
+extern double gps_altitude;
+extern vec3_t imu_mag;
+extern vec3_t imu_accel;
+extern vec3_t imu_gyro;
+extern float imu_hoz;
 void comms_gps(double latitude, double longitude, double altitude);
 void comms_imu(vec3_t mag, vec3_t accel, vec3_t gyro, float hoz);
