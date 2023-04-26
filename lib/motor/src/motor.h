@@ -4,7 +4,7 @@
 Servo ESC;
 
 void motor_init() {
-    ESC.attach(1);
+    ESC.attach(14);
     ESC.writeMicroseconds(1000);
 
     delay(5000);
