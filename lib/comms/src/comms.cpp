@@ -9,6 +9,9 @@ vec3_t imu_accel = {.x = 0, .y = 0, .z = 0};
 vec3_t imu_gyro = {.x = 0, .y = 0, .z = 0};
 float imu_hoz = 0;
 
+double ctl_heading = 0;
+uint32_t ctl_speed = 0;
+
 static uint32_t crc32(const uint8_t data[], size_t data_length)
 {
     uint32_t crc32 = 0xFFFFFFFFu;
@@ -26,12 +29,12 @@ static uint32_t crc32(const uint8_t data[], size_t data_length)
 
 inline void read(uint8_t *buffer, int length)
 {
-    #if defined (TARGET_NANO_RP2040_CONNECT) || defined (TARGET_RASPBERRY_PI_PICO)
+#if defined(TARGET_NANO_RP2040_CONNECT) || defined(TARGET_RASPBERRY_PI_PICO)
     Serial1.readBytes(buffer, length);
-    #endif
-    #ifdef ARDUINO_AVR_UNO
+#endif
+#ifdef ARDUINO_AVR_UNO
     Serial.readBytes(buffer, length);
-    #endif
+#endif
 }
 
 bool check_crc(uint8_t data[], size_t length, uint8_t expected[])
@@ -56,12 +59,12 @@ void comms_send(uint8_t *data, size_t data_size, uint8_t header)
     uint32_t hash = crc32(data, data_size);
     memcpy(packet + 3 + data_size, &hash, 4);
 
-    #if defined (TARGET_NANO_RP2040_CONNECT) || defined (TARGET_RASPBERRY_PI_PICO)
+#if defined(TARGET_NANO_RP2040_CONNECT) || defined(TARGET_RASPBERRY_PI_PICO)
     Serial1.write(packet, packet_size);
-    #endif
-    #ifdef ARDUINO_AVR_UNO
+#endif
+#ifdef ARDUINO_AVR_UNO
     Serial.write(packet, packet_size);
-    #endif
+#endif
 }
 
 // Start auto-generated code
@@ -98,9 +101,21 @@ void comms_unpack_imu(uint8_t data[], vec3_t *mag, vec3_t *accel, vec3_t *gyro, 
     memcpy(gyro, data + 24, sizeof(vec3_t));
     memcpy(hoz, data + 36, sizeof(float));
 }
+void comms_ctl(double heading, uint32_t speed)
+{
+    static const int data_size = sizeof(double) + sizeof(uint32_t);
+    uint8_t data[data_size];
+    memcpy(&data[0], &heading, sizeof(double));
+    memcpy(&data[8], &speed, sizeof(uint32_t));
+    comms_send(data, data_size, 3);
+}
+void comms_unpack_ctl(uint8_t data[], double *heading, uint32_t *speed)
+{
+    memcpy(heading, data + 0, sizeof(double));
+    memcpy(speed, data + 8, sizeof(uint32_t));
+}
 packet_t comms_recv()
 {
-    // Note: Current implementation only handles one packet per call
     uint8_t start = 0;
     read(&start, 1);
     if (start == 0x16)
@@ -125,6 +140,15 @@ packet_t comms_recv()
                 return packet_error_crc;
             comms_unpack_imu(data, &imu_mag, &imu_accel, &imu_gyro, &imu_hoz);
             return packet_imu;
+        }
+        else if (header == 3)
+        {
+            uint8_t data[12 + 4];
+            read(data, 12 + 4);
+            if (!check_crc(data, 12, data + 12))
+                return packet_error_crc;
+            comms_unpack_ctl(data, &ctl_heading, &ctl_speed);
+            return packet_ctl;
         }
     }
     return packet_none;

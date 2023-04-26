@@ -1,8 +1,13 @@
 #pragma once
+#include <vector.h>
 #include <inttypes.h>
 #include <Arduino.h>
-#include <vector.h>
 
+typedef struct VECTOR_STRUCT {
+    float x;
+    float y;
+    float z;
+} vec3_t;
 
 static const uint32_t crc_table[256] = {
   0x0, 0x77073096, 0xee0e612c, 0x990951ba, 
@@ -75,7 +80,7 @@ void comms_send(uint8_t *data, size_t data_size, uint8_t header);
 
 // Start auto-generated code
 
-typedef enum PACKET_ENUM {packet_error_crc = -1, packet_none = 0, packet_gps = 1, packet_imu = 2} packet_t;
+typedef enum {packet_error_crc = -1, packet_none = 0, packet_gps = 1, packet_imu = 2, packet_ctl = 3} packet_t;
 packet_t comms_recv();
 extern double gps_latitude;
 extern double gps_longitude;
@@ -84,5 +89,8 @@ extern vec3_t imu_mag;
 extern vec3_t imu_accel;
 extern vec3_t imu_gyro;
 extern float imu_hoz;
+extern double ctl_heading;
+extern uint32_t ctl_speed;
 void comms_gps(double latitude, double longitude, double altitude);
 void comms_imu(vec3_t mag, vec3_t accel, vec3_t gyro, float hoz);
+void comms_ctl(double heading, uint32_t speed);

@@ -81,7 +81,7 @@ def recv_header(datas):
 
     for data in datas:
         for field in data["field"]:
-            print(f"static {field['type']} {data['name']}_{field['name']};")
+            print(f"extern {field['type']} {data['name']}_{field['name']};")
 
 def recv_code(datas):
     func = c.FunctionBody(
@@ -139,11 +139,11 @@ def recv_code(datas):
 
 
 
-#print("comms.h:\n")
-#recv_header(datas)
-#for data in datas:
-#    send_header(data)
-#print("comms.cpp:\n")
+print("comms.h:\n")
+recv_header(datas)
+for data in datas:
+    send_header(data)
+print("comms.cpp:\n")
 for data in datas:
     send_code(data)
     recv_unpack_code(data)
