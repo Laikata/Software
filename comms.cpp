@@ -29,12 +29,7 @@ static uint32_t crc32(const uint8_t data[], size_t data_length)
 
 inline void read(uint8_t *buffer, int length)
 {
-#if defined(TARGET_NANO_RP2040_CONNECT) || defined(TARGET_RASPBERRY_PI_PICO)
     Serial1.readBytes(buffer, length);
-#endif
-#ifdef ARDUINO_AVR_UNO
-    Serial.readBytes(buffer, length);
-#endif
 }
 
 bool check_crc(uint8_t data[], size_t length, uint8_t expected[])
@@ -59,12 +54,7 @@ void comms_send(uint8_t *data, size_t data_size, uint8_t header)
     uint32_t hash = crc32(data, data_size);
     memcpy(packet + 3 + data_size, &hash, 4);
 
-#if defined(TARGET_NANO_RP2040_CONNECT) || defined(TARGET_RASPBERRY_PI_PICO)
     Serial1.write(packet, packet_size);
-#endif
-#ifdef ARDUINO_AVR_UNO
-    Serial.write(packet, packet_size);
-#endif
 }
 
 // Start auto-generated code

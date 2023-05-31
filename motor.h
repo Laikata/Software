@@ -1,5 +1,5 @@
+#pragma once
 #include <Servo.h>
-#include <Arduino.h>
 
 Servo ESC;
 

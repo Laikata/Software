@@ -1,8 +1,7 @@
-#include <Arduino.h>
-#include <vector.h>
-#include <motor.h>
-#include <comms.h>
-
+#include "motor.h"
+#include "comms.h"
+#include "vector.h"
+#include "gps.h"
 
 void test_gps(void) {
     double latitude = 69.420;
