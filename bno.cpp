@@ -128,15 +128,11 @@ void bno_init(){
   }
 }
 
-float bno_getAzimuth(){
+double bno_getAzimuth(){
   imu::Quaternion quat = bno.getQuat();
-  Serial.print("qW: ");
-  Serial.print(quat.w(), 4); 
-  Serial.print(" qX: ");
-  Serial.print(quat.x(), 4);
-  Serial.print(" qY: ");
-  Serial.print(quat.y(), 4);
-  Serial.print(" qZ: ");
-  Serial.print(quat.z(), 4);
-  return 0.0;
+  double siny_cosp = 2 * (quat.w() * quat.z() + quat.x() * quat.y());
+  double cosy_cosp = 1 - 2 * (quat.y() * quat.y() + quat.z() * quat.z());
+  double yaw = atan2 (siny_cosp, cosy_cosp);
+  double a = yaw * 57.21 + 180;
+  return a;
 }

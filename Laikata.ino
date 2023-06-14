@@ -3,7 +3,7 @@
 //#include "vector.h"
 #include <LittleFS.h>
 #include "bno.h"
-
+#include "gps.h"
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28, &Wire);
 
 // void test_gps(void) {
@@ -52,18 +52,17 @@ Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28, &Wire);
 // }
 // C:\Users\BOT\.platformio\packages\tool-rp2040tools
 void setup(){
-  pinMode(1, OUTPUT);
-  analogWrite(1, 255);
   LittleFS.begin();
   Serial.begin(115200);
   bno_init();
-  analogWrite(1, 255);
+  gps_init();
 }
 
 bool motor_override = false;
 long last_send = 0;
 
 void loop(){
+  gps_info();
   imu::Quaternion quat = bno.getQuat();
   Serial.print("qW: ");
   Serial.print(quat.w(), 4); 
@@ -80,7 +79,7 @@ void loop(){
   Serial.print("  ");
   Serial.print(a, 2);
   Serial.println("\t\t");
-    // Serial.printf("BNO: %g\n", bno_getAzimuth());
+    Serial.printf("BNO: %g\n", bno_getAzimuth());
 
     // for(int i = 1000; i < 2000; i += 100) {
     //     motor_speed(i);

@@ -8,4 +8,4 @@
 #define BNO055_SAMPLERATE_DELAY_MS (100)
 
 void bno_init();
-float bno_getAzimuth();
+double bno_getAzimuth();
